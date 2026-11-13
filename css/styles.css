@@ -1,0 +1,48 @@
+:root {
+  --bg: #0b1220;
+  --panel: #111a2e;
+  --accent: #38bdf8;
+  --text: #e2e8f0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.hero {
+  background: radial-gradient(circle at 20% 0%, #1e3a5f 0%, var(--bg) 60%);
+  border-bottom: 1px solid #1e293b;
+}
+
+.text-secondary { color: #94a3b8 !important; }
+
+.list-group-item {
+  background: var(--panel);
+  color: var(--text);
+  border-color: #1e293b;
+}
+
+.preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #0f172a;
+  overflow: hidden;
+}
+.preview canvas { display: block; width: 100% !important; height: 100% !important; touch-action: none; }
+
+.preview-loading, .preview-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(11, 18, 32, .85);
+  font-weight: 600;
+  text-align: center;
+  padding: 1rem;
+}
+
+.goals li { display: flex; align-items: center; gap: .6rem; padding: .25rem 0; }
+.goals .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--c); flex: none; }
+
+.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
