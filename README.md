@@ -6,8 +6,9 @@ Evolución de la práctica **3.1** ([`laboratorio-vr-ensamblaje` @ v3.1](https:/
 
 El usuario toma con las manos **20 figuras** (5 esferas, 5 cubos, 5 pirámides y 5 prismas hexagonales), repartidas al azar en **4 mesas** (5 por mesa), y las deja caer en **4 botes abiertos**. Un panel 3D registra aciertos 0/20, progreso 0/5 por bote, errores, intentos, precisión, tiempo global y tiempo de llenado de cada bote.
 
-- Repositorio: `https://github.com/<usuario>/<repositorio>`
-- GitHub Pages: `https://<usuario>.github.io/<repositorio>/`
+- Repositorio: https://github.com/l24200197-commits/laboratorio-vr-clasificacion
+- GitHub Pages: https://l24200197-commits.github.io/laboratorio-vr-clasificacion/
+- Autoprueba en línea: https://l24200197-commits.github.io/laboratorio-vr-clasificacion/?autoprueba
 
 ## Ejecución local (sin compilación)
 1. Abrir la carpeta en VS Code → clic derecho en `index.html` → **Open with Live Server**. No usar `file://`: los módulos ES fallan.
