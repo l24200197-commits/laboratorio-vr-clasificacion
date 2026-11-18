@@ -1,27 +1,44 @@
-// Reglas de negocio PURAS (sin Three.js de escena ni DOM): fáciles de probar y explicar.
-//
-// La distancia medida es la distancia euclidiana 3D (m) entre el centro de la pieza al soltarla
-// y el punto de referencia (centro) de cada destino.
+// Reglas de clasificación PURAS (sin escena, sin DOM): fáciles de leer, explicar y probar.
+import { RULES } from './config.js';
 
 /**
- * @param {{distanceTo: Function}} piecePosition  posición de la pieza (THREE.Vector3)
- * @param {string} expectedTargetId              destino asignado a la pieza
- * @param {Array<{id:string, position:any}>} targets
- * @param {number} tolerance                     metros
- * @returns {{ok:boolean, reason:'ok'|'distancia'|'destino', nearestId:string|null, distance:number}}
+ * Devuelve el bote cuyo VOLUMEN INTERIOR ÚTIL contiene el centro de la pieza, o null.
+ * "Útil" = dentro de las paredes (con margen), por encima del fondo y por debajo del borde:
+ * una pieza apoyada sobre el borde o fuera de la base NO cuenta.
+ * @param {{x:number,y:number,z:number}} pos
+ * @param {Iterable<{cx:number,cz:number,half:number,baseY:number,rimY:number}>} bins
  */
-export function validateDrop(piecePosition, expectedTargetId, targets, tolerance) {
-  if (!(tolerance > 0)) throw new RangeError('La tolerancia debe ser > 0');
-  if (!Array.isArray(targets) || targets.length === 0) throw new TypeError('No hay destinos');
-
-  let nearest = null;
-  let best = Infinity;
-  for (const t of targets) {
-    const d = piecePosition.distanceTo(t.position);
-    if (d < best) { best = d; nearest = t; }
+export function binContaining(pos, bins) {
+  for (const b of bins) {
+    const lim = b.half - RULES.insideMargin;
+    if (Math.abs(pos.x - b.cx) < lim
+      && Math.abs(pos.z - b.cz) < lim
+      && pos.y > b.baseY
+      && pos.y < b.rimY - RULES.rimMargin) return b;
   }
+  return null;
+}
 
-  if (best > tolerance) return { ok: false, reason: 'distancia', nearestId: nearest.id, distance: best };
-  if (nearest.id !== expectedTargetId) return { ok: false, reason: 'destino', nearestId: nearest.id, distance: best };
-  return { ok: true, reason: 'ok', nearestId: nearest.id, distance: best };
+/** ¿El cuerpo está prácticamente quieto? (o dormido por el motor físico) */
+export function isSlow(linearSpeed, angularSpeed, sleeping = false) {
+  return sleeping || (linearSpeed < RULES.stableLinear && angularSpeed < RULES.stableAngular);
+}
+
+/** Resultado de un intento confirmado: acierto si la categoría coincide con la del bote. */
+export function judge(pieceCategory, binCategory) {
+  return pieceCategory === binCategory ? 'acierto' : 'error';
+}
+
+/** Precisión = aciertos / intentos confirmados × 100; 0 % si no hay intentos. */
+export function precision(hits, attempts) {
+  return attempts > 0 ? (hits / attempts) * 100 : 0;
+}
+
+export function formatClock(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
+export function formatSeconds(ms) {
+  return `${(ms / 1000).toFixed(1)} s`;
 }

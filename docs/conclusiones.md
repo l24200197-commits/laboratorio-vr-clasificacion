@@ -1,23 +1,35 @@
-# Conclusiones (plantilla — completar con tu experiencia real)
+# Conclusiones (plantilla — completar con tu experiencia real y copiarlas a la plataforma)
 
 ## Entregables
-- URL repositorio GitHub: 
-- URL GitHub Pages (HTTPS): 
-- URL video en Meta Quest 3: 
+- URL del repositorio en GitHub:
+- URL de GitHub Pages (HTTPS):
 
-## 16.1 Lo aprendido
-- **Three.js:** escena, cámara, renderer, materiales y el ciclo `setAnimationLoop`, necesario porque en WebXR el visor controla el ritmo de los frames.
-- **WebXR:** la sesión `immersive-vr` se pide con un gesto del usuario y desde HTTPS; la compatibilidad se detecta con `navigator.xr.isSessionSupported`.
-- **Seguimiento de manos:** cada mano es un `XRInputSource` con articulaciones; su *target-ray space* da el rayo y la pinza produce `selectstart/selectend`.
-- **Raycasting:** se lanza un rayo desde la mano y se calcula la intersección solo contra piezas disponibles y botones.
-- **Import maps:** permiten usar `import 'three'` en el navegador sin npm, apuntando a un CDN con versión fija.
+## 16.1 Geometría visual, cuerpo rígido, colisionador, gravedad y estados
+- **Geometría visual (malla):** triángulos que se dibujan; no participa en la física.
+- **Cuerpo rígido:** masa, posición, orientación y velocidades que integra cannon-es en cada paso.
+- **Colisionador:** forma simple asociada al cuerpo (Sphere, Box, ConvexPolyhedron) con la que se detectan los contactos.
+- **Gravedad:** aceleración de −9.81 m/s² que solo afecta a los cuerpos dinámicos.
+- **Tipos:** estático (mesas, botes, piso), dinámico (piezas libres) y cinemático (pieza sujeta por la mano, o clasificada y congelada).
 
-## 16.2 Dos problemas y su solución
-1. Problema: … · Diagnóstico (Console/Network/visor): … · Cómo ayudó la IA: …
-2. Problema: … · Diagnóstico: … · Cómo ayudó la IA: …
+## 16.2 Dos problemas concretos y cómo se resolvieron con el agente de IA
+1. Problema: … · Diagnóstico: … · Solución:
+   *(ejemplo real del desarrollo: un cuerpo cinemático atravesaba mesas y paredes porque cannon-es no resuelve contactos cinemático–estático; se añadió un raycast de barrido desde la posición actual hasta el objetivo)*
+2. Problema: … · Diagnóstico: … · Solución:
+   *(ejemplo: evitar el doble conteo por rebotes; se exige reposo continuo de 0.7 s y una bandera `judged` por intento)*
 
-## 16.3 Bootstrap vs. controles 3D
-Bootstrap y el DOM solo existen en la portada web (fuera de VR). Dentro de la sesión inmersiva el navegador muestra únicamente lo que renderiza WebGL, así que el contador, el cronómetro, los mensajes y los botones Reiniciar/Salir se construyeron como mallas 3D con texturas de canvas, seleccionables con rayo y pinza.
+## 16.3 Interpretación de mis métricas
+| Métrica | Valor |
+|---|---|
+| Precisión | |
+| Errores | |
+| Tiempo global | |
+| Llenado ESFERA / CUBO / PIRÁMIDE / PRISMA HEX | |
+
+Interpretación:
 
 ## 16.4 Comprobado personalmente en Meta Quest 3
-- [ ] …
+- [ ] Sesión immersive-vr desde GitHub Pages
+- [ ] Ambas manos detectadas; pinza sin controles
+- [ ] 20 clasificaciones correctas y ≥ 3 erróneas, sin doble conteo
+- [ ] Pieza caída al suelo y recuperada
+- [ ] Salir y volver a entrar a VR, reiniciar

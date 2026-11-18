@@ -1,87 +1,72 @@
-// Estado central ÚNICO del laboratorio. El progreso se DERIVA de los estados de las piezas
-// (no existe un contador separado que pueda desincronizarse o duplicarse).
-
-export const STATUS = Object.freeze({
-  AVAILABLE: 'disponible',
-  SELECTED: 'seleccionada',
-  MOVING: 'en movimiento',
-  PLACED: 'colocada',
-});
+// Estado de la PARTIDA: fase, métricas y cronómetro. El estado de cada pieza vive en su registro
+// (pieces.js); los aciertos se DERIVAN contando piezas 'clasificada', así no existe un contador
+// paralelo que pueda desincronizarse o sumar dos veces.
+import { CATEGORIES } from './config.js';
+import { precision } from './rules.js';
+import { STATE } from './pieces.js';
 
 export const PHASE = Object.freeze({
-  PENDING: 'pendiente',
-  ACTIVE: 'activo',
-  ERROR: 'error',
+  READY: 'listo',
+  RUNNING: 'en curso',
+  PAUSED: 'en pausa',
   DONE: 'completado',
 });
 
-const VALID_STATUS = new Set(Object.values(STATUS));
-
-export function createStore(pieceIds) {
-  if (!Array.isArray(pieceIds) || pieceIds.length === 0) {
-    throw new TypeError('createStore requiere una lista de IDs de piezas');
-  }
-
-  const initial = () => ({
-    pieces: new Map(pieceIds.map((id) => [id, { status: STATUS.AVAILABLE, holder: null }])),
-    phase: PHASE.PENDING,
-    message: 'Toma una pieza para iniciar',
-    errorUntil: 0,
-    timerStart: null,
-    timerEnd: null,
+export function createStore() {
+  const fresh = () => ({
+    phase: PHASE.READY,
+    message: 'Pulsa «Comenzar» en el panel para iniciar',
+    tone: 'info',          // info | ok | error | done
+    errors: 0,             // intentos equivocados CONFIRMADOS (uno por intento)
+    binTimes: new Map(CATEGORIES.map((c) => [c.id, null])), // ms desde el inicio hasta 5/5
+    timer: { accumulated: 0, startedAt: null }, // startedAt != null ⇒ corriendo
+    finalMs: null,
   });
 
-  let state = initial();
-  // Datos de sesión XR: se conservan entre reinicios del reto.
+  let s = fresh();
+  // Datos de sesión XR: se conservan entre reinicios.
   const session = { xrActive: false, hands: { left: false, right: false }, controllers: false };
 
-  return {
-    total: pieceIds.length,
+  const api = {
     session,
-    get: () => state,
-    piece: (id) => state.pieces.get(id),
+    get: () => s,
+    reset() { s = fresh(); },
 
-    placedCount() {
-      let n = 0;
-      for (const p of state.pieces.values()) if (p.status === STATUS.PLACED) n++;
-      return n;
+    elapsed(now) {
+      const t = s.timer;
+      return t.accumulated + (t.startedAt !== null ? now - t.startedAt : 0);
     },
-
-    setPiece(id, status, holder = null) {
-      const p = state.pieces.get(id);
-      if (!p) throw new Error(`Pieza desconocida: ${id}`);
-      if (!VALID_STATUS.has(status)) throw new Error(`Estado inválido: ${status}`);
-      p.status = status;
-      p.holder = holder;
+    start(now) {
+      if (s.timer.startedAt === null) s.timer.startedAt = now;
+      s.phase = PHASE.RUNNING;
     },
-
-    startTimer(now) { if (state.timerStart === null) state.timerStart = now; },
-    stopTimer(now) { if (state.timerStart !== null && state.timerEnd === null) state.timerEnd = now; },
-    elapsedMs(now) {
-      if (state.timerStart === null) return 0;
-      return (state.timerEnd ?? now) - state.timerStart;
-    },
-
-    setPhase(phase, message, errorUntil = 0) {
-      state.phase = phase;
-      state.message = message;
-      state.errorUntil = errorUntil;
-    },
-
-    tick(now) {
-      if (state.phase === PHASE.ERROR && now >= state.errorUntil) {
-        state.phase = PHASE.ACTIVE;
-        state.message = 'Intenta de nuevo';
+    pause(now) {
+      if (s.timer.startedAt !== null) {
+        s.timer.accumulated += now - s.timer.startedAt;
+        s.timer.startedAt = null;
       }
+      s.phase = PHASE.PAUSED;
+    },
+    finish(now) {
+      api.pause(now);
+      s.finalMs = s.timer.accumulated;
+      s.phase = PHASE.DONE;
     },
 
-    reset() { state = initial(); },
-  };
-}
+    setMessage(message, tone = 'info') { s.message = message; s.tone = tone; },
+    addError() { s.errors += 1; },
+    setBinTime(categoryId, ms) { if (s.binTimes.get(categoryId) === null) s.binTimes.set(categoryId, ms); },
 
-export function formatTime(ms) {
-  const total = Math.floor(ms / 1000);
-  const m = String(Math.floor(total / 60)).padStart(2, '0');
-  const s = String(total % 60).padStart(2, '0');
-  return `${m}:${s}`;
+    /** Métricas derivadas a partir de los registros de piezas. */
+    metrics(pieces) {
+      const perCategory = new Map(CATEGORIES.map((c) => [c.id, 0]));
+      let hits = 0;
+      for (const p of pieces.values()) {
+        if (p.state === STATE.CLASSIFIED) { hits++; perCategory.set(p.category, perCategory.get(p.category) + 1); }
+      }
+      const attempts = hits + s.errors;
+      return { hits, perCategory, errors: s.errors, attempts, precision: precision(hits, attempts) };
+    },
+  };
+  return api;
 }
