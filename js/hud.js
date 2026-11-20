@@ -254,7 +254,7 @@ export function createHud(scene) {
   function updateButtons(phase) {
     const toggle = buttons[0];
     if (phase === 'listo') toggle.setLabel('Jugar', true, 'play');
-    else if (phase === 'en curso') toggle.setLabel('Pausa', true, 'pause');
+    else if (phase === 'en curso') toggle.setLabel('Jugando', false, 'play');
     else if (phase === 'en pausa') toggle.setLabel('Seguir', true, 'play');
     else toggle.setLabel('Terminado', false, 'check');
   }

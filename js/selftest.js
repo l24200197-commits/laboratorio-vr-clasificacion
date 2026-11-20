@@ -82,9 +82,7 @@ export async function runSelfTest({ physics, game, store, pieces, bins, tables }
   game.toggle(now);
   check('Jugar inicia la partida', store.get().phase === 'en curso');
   game.toggle(now);
-  check('Pausa detiene la partida', store.get().phase === 'en pausa');
-  game.toggle(now);
-  check('Seguir la reanuda', store.get().phase === 'en curso');
+  check('pulsar Jugar otra vez NO pausa la partida', store.get().phase === 'en curso');
 
   // 5. Anti-atravesamiento con la pieza sujeta
   const tId = [...pieces.keys()].find((id) => pieces.get(id).category === 'cubo');

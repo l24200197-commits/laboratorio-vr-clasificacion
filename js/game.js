@@ -103,8 +103,8 @@ export function createGame({ physics, store, pieces, bins, tables, holds, hud, s
 
   /** Botón Jugar / Pausa / Seguir de la consola. */
   function toggle(now) {
-    if (store.get().phase === PHASE.RUNNING) { pause(now, 'Partida en pausa'); sounds.click(); }
-    else start(now);
+    // Solo inicia o reanuda: una pinza doble ya no puede dejar la partida en pausa sin querer.
+    start(now);
   }
 
   function reset() {
