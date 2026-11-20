@@ -15,7 +15,7 @@ export const PHASE = Object.freeze({
 export function createStore() {
   const fresh = () => ({
     phase: PHASE.READY,
-    message: 'Pulsa «Comenzar» en el panel para iniciar',
+    message: 'Pulsa «Jugar» en la consola para iniciar',
     tone: 'info',          // info | ok | error | done
     errors: 0,             // intentos equivocados CONFIRMADOS (uno por intento)
     binTimes: new Map(CATEGORIES.map((c) => [c.id, null])), // ms desde el inicio hasta 5/5

@@ -4,7 +4,7 @@
 // ¿Por qué paso fijo? El visor dibuja a 72/90/120 Hz y los frames no duran siempre lo mismo.
 // Si la física avanzara con el delta variable del frame, las colisiones cambiarían según la
 // velocidad del equipo. Con un acumulador avanzamos SIEMPRE en pasos de 1/60 s (cada uno con
-// 2 subpasos de 1/120 s) y la malla se dibuja interpolando entre los dos últimos estados.
+// 4 subpasos de 1/240 s) y la malla se dibuja interpolando entre los dos últimos estados.
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { PHYSICS } from './config.js';
@@ -88,8 +88,13 @@ export function createPhysics() {
     let n = 0;
     while (accumulator >= h && n < PHYSICS.maxStepsPerFrame) {
       for (const t of tracked) { t.prevPos.copy(t.body.position); t.prevQuat.copy(t.body.quaternion); }
-      for (const hook of stepHooks) hook(h);
-      for (let i = 0; i < PHYSICS.substeps; i++) world.step(h / PHYSICS.substeps);
+      const sub = h / PHYSICS.substeps;
+      for (let i = 0; i < PHYSICS.substeps; i++) {
+        // Los ganchos (sujeción) fijan velocidades ANTES de cada subpaso: así el solver de contactos
+        // las corrige después y nada se mete dentro de mesas o botes.
+        for (const hook of stepHooks) hook(sub);
+        world.step(sub);
+      }
       accumulator -= h;
       n++;
     }

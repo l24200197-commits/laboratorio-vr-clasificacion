@@ -89,7 +89,7 @@ export function createGame({ physics, store, pieces, bins, tables, holds, hud, s
     const phase = store.get().phase;
     if (phase === PHASE.READY || phase === PHASE.PAUSED) {
       store.start(now);
-      store.setMessage(phase === PHASE.READY ? '¡Adelante! Toma una figura y llévala a su bote' : 'Partida reanudada', 'info');
+      store.setMessage(phase === PHASE.READY ? '¡Adelante! Toma una figura y llévala a su bote' : 'Seguimos: el cronómetro vuelve a correr', 'info');
       sounds.click();
     }
   }
@@ -98,7 +98,13 @@ export function createGame({ physics, store, pieces, bins, tables, holds, hud, s
     if (store.get().phase !== PHASE.RUNNING) return;
     releaseAll();
     store.pause(now);
-    store.setMessage(`${reason} · pulsa «Continuar»`, 'info');
+    store.setMessage(`${reason} · pulsa «Seguir»`, 'info');
+  }
+
+  /** Botón Jugar / Pausa / Seguir de la consola. */
+  function toggle(now) {
+    if (store.get().phase === PHASE.RUNNING) { pause(now, 'Partida en pausa'); sounds.click(); }
+    else start(now);
   }
 
   function reset() {
@@ -108,7 +114,7 @@ export function createGame({ physics, store, pieces, bins, tables, holds, hud, s
     store.reset();
     newLayout();
     for (const b of binList) { b.setCount(0); b.flashUntil = 0; }
-    store.setMessage('Nueva distribución lista. Pulsa «Comenzar»', 'info');
+    store.setMessage('Nueva ronda lista. Pulsa «Jugar»', 'info');
     sounds.click();
   }
 
@@ -117,10 +123,10 @@ export function createGame({ physics, store, pieces, bins, tables, holds, hud, s
     let n = 0;
     for (const r of pieces.values()) {
       if (r.state === STATE.ERROR || r.state === STATE.RECOVERABLE || (r.judged && r.state !== STATE.CLASSIFIED)) {
-        if (returnToTable(r, 'botón Recuperar')) n++;
+        if (returnToTable(r, 'botón Rescatar')) n++;
       }
     }
-    store.setMessage(n ? `${n} pieza(s) devueltas a las mesas` : 'No hay piezas que recuperar', 'info');
+    store.setMessage(n ? `${n} pieza(s) rescatadas a las mesas` : 'No hay piezas que rescatar', 'info');
     sounds.click();
   }
 
@@ -143,7 +149,7 @@ export function createGame({ physics, store, pieces, bins, tables, holds, hud, s
     const r = pieces.get(id);
     const phase = store.get().phase;
     if (phase !== PHASE.RUNNING) {
-      store.setMessage(phase === PHASE.DONE ? 'Partida terminada: pulsa «Reiniciar»' : 'Pulsa «Comenzar» / «Continuar» primero', 'info');
+      store.setMessage(phase === PHASE.DONE ? 'Partida terminada: pulsa «Nueva ronda»' : 'Pulsa «Jugar» / «Seguir» primero', 'info');
       return false;
     }
     if (!canGrab(r)) return false; // clasificada o ya sujeta por la otra mano
@@ -309,7 +315,7 @@ export function createGame({ physics, store, pieces, bins, tables, holds, hud, s
   newLayout();
 
   return {
-    start, pause, reset, recover, grab, setHoldTarget, release, releaseAll, update, snapshot, selectables,
+    start, pause, toggle, reset, recover, grab, setHoldTarget, release, releaseAll, update, snapshot, selectables,
     setHover(source, id) { if (id) hovers.set(source, id); else hovers.delete(source); },
     registerCanceller: (fn) => cancellers.add(fn),
     get layout() { return lastLayout; },

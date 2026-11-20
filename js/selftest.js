@@ -77,10 +77,14 @@ export async function runSelfTest({ physics, game, store, pieces, bins, tables }
   check('las 20 piezas se asientan sobre las mesas (ni flotan ni caen)', rest === 20, `${rest}/20 en reposo sobre mesa`);
   await yieldUI();
 
-  // 4. No se puede tomar antes de «Comenzar»
-  check('no se toma ninguna pieza antes de Comenzar', game.grab([...pieces.keys()][0], H) === false);
-  game.start(now);
-  check('Comenzar inicia la partida', store.get().phase === 'en curso');
+  // 4. No se puede tomar antes de «Jugar»; el mismo botón pausa y reanuda
+  check('no se toma ninguna pieza antes de Jugar', game.grab([...pieces.keys()][0], H) === false);
+  game.toggle(now);
+  check('Jugar inicia la partida', store.get().phase === 'en curso');
+  game.toggle(now);
+  check('Pausa detiene la partida', store.get().phase === 'en pausa');
+  game.toggle(now);
+  check('Seguir la reanuda', store.get().phase === 'en curso');
 
   // 5. Anti-atravesamiento con la pieza sujeta
   const tId = [...pieces.keys()].find((id) => pieces.get(id).category === 'cubo');
@@ -97,7 +101,10 @@ export async function runSelfTest({ physics, game, store, pieces, bins, tables }
 
   const wallBin = binOf('esfera');
   game.grab(tId, H);
-  sim(0.8, () => game.setHoldTarget(tId, H, { x: wallBin.cx - 0.4, y: 0.68, z: wallBin.cz }, null));
+  // Se llega por ARRIBA al lado izquierdo del bote (sin cruzar los demás), se baja por debajo del
+  // borde y después se empuja la pieza hacia el centro: la pared debe detenerla.
+  sim(0.8, () => game.setHoldTarget(tId, H, { x: wallBin.cx - 0.4, y: 1.1, z: wallBin.cz }, null));
+  sim(0.6, () => game.setHoldTarget(tId, H, { x: wallBin.cx - 0.4, y: 0.68, z: wallBin.cz }, null));
   sim(0.8, () => game.setHoldTarget(tId, H, { x: wallBin.cx, y: 0.68, z: wallBin.cz }, null));
   const px = tRec.body.position.x;
   check('pieza sujeta no atraviesa la pared del bote', px < wallBin.cx - wallBin.half, `x=${px.toFixed(3)}, pared interior en ${(wallBin.cx - wallBin.half).toFixed(3)}`);
@@ -197,7 +204,7 @@ export async function runSelfTest({ physics, game, store, pieces, bins, tables }
   // Rendimiento de la física (CPU de esta computadora, no del visor)
   stepTimes.sort((a, b) => a - b);
   const avg = stepTimes.reduce((a, b) => a + b, 0) / stepTimes.length;
-  out.push(`INFO  · paso físico (2 subpasos) en este equipo: media ${avg.toFixed(2)} ms, p95 ${stepTimes[Math.floor(stepTimes.length * 0.95)].toFixed(2)} ms, ${stepTimes.length} pasos`);
+  out.push(`INFO  · paso físico (4 subpasos) en este equipo: media ${avg.toFixed(2)} ms, p95 ${stepTimes[Math.floor(stepTimes.length * 0.95)].toFixed(2)} ms, ${stepTimes.length} pasos`);
 
   const summary = failed === 0 ? `AUTOPRUEBA OK (${out.length - 1} comprobaciones)` : `AUTOPRUEBA CON ${failed} FALLO(S)`;
   out.unshift(summary);

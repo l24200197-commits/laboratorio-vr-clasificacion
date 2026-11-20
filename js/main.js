@@ -56,7 +56,7 @@ async function init() {
 
   const onButton = (action) => {
     const now = performance.now();
-    if (action === 'start') game.start(now);
+    if (action === 'toggle') game.toggle(now);
     else if (action === 'reset') game.reset();
     else if (action === 'recover') game.recover();
     else if (action === 'exit') exitVR();
@@ -92,7 +92,7 @@ async function init() {
       store.session.xrActive = true;
       controls.enabled = false;
       ui.setInSession(true);
-      ui.setButton({ enabled: true, text: 'Salir de VR' });
+      ui.setButton({ enabled: true, text: 'Cerrar VR' });
     } catch (err) {
       console.error(err);
       ui.showError(`No se pudo abrir la sesión VR (${err.name}): ${err.message}`);

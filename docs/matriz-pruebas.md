@@ -21,7 +21,7 @@ Las filas *Quest* quedan como **NO PROBADO** hasta tener evidencia real en el vi
 | 14 | Panel 0/20→20/20 y 4 × 0/5→5/5 | Auto + Quest | Completar la partida | 20/20 y 5/5 en cada bote | PASA (Auto); visor NO PROBADO | |
 | 15 | 4 tiempos de llenado, tiempo global, intentos, precisión y errores | Auto | Autoprueba: tiempos ≤ global; precisión = 20/23 | Fórmulas correctas | PASA (Auto) | |
 | 16 | El cronómetro se detiene en 20/20 | Auto | Autoprueba | Tiempo congelado | PASA (Auto) | |
-| 17 | Reiniciar restablece la puntuación y genera otro escenario | Auto + Quest | Autoprueba + botón Reiniciar en VR | 0/20, 00:00, nuevas posiciones | PASA (Auto); visor NO PROBADO | |
+| 17 | Nueva ronda restablece la puntuación y genera otro escenario | Auto + Quest | Autoprueba + botón Nueva ronda en VR | 0/20, 00:00, nuevas posiciones | PASA (Auto); visor NO PROBADO | |
 | 18 | VR y carga web sin errores críticos | PC + Quest | Console/Network; sesión en el visor | Sin 404/CORS ni excepciones | PC: sin errores (Chrome headless); visor NO PROBADO | |
 | 19 | URL de GitHub y de Pages públicas | PC + Quest | Abrir en ventana privada y en el visor | Accesibles sin sesión | NO PROBADO (pendiente de publicar) | |
 | 20 | Dos problemas reales y conclusiones | Alumno | Redactar en la plataforma | — | Pendiente (alumno) | `docs/conclusiones.md` |

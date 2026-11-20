@@ -60,7 +60,7 @@ export const BIN = {
 export const PHYSICS = {
   gravity: -9.81,
   fixedStep: 1 / 60,       // paso fijo de simulación
-  substeps: 2,             // cada paso de 1/60 s se divide en 2 subpasos de 1/120 s (menos penetración)
+  substeps: 4,             // cada paso de 1/60 s se divide en 4 subpasos de 1/240 s (sin túneles a 4 m/s)
   maxStepsPerFrame: 4,     // si un frame tarda mucho no se intenta "alcanzar" todo el tiempo perdido
   maxFrameDt: 0.1,
   solverIterations: 12,
@@ -70,7 +70,11 @@ export const PHYSICS = {
   angularDamping: 0.3,     // también hace de "fricción de rodadura" (cannon-es no la modela)
   sleepSpeedLimit: 0.05,
   sleepTimeLimit: 0.6,
-  // Sujeción cinemática
+  // Sujeción física (resorte-amortiguador; ver js/grab.js)
+  holdStiffness: 45,          // rad/s: frecuencia del resorte que lleva la pieza a la mano
+  holdMaxAccel: 70,           // m/s²: fuerza máxima de la mano (no puede "meter" piezas en las mesas)
+  holdAngularStiffness: 30,   // rad/s
+  holdMaxAngularAccel: 900,   // rad/s²
   maxHeldSpeed: 4,         // m/s: la pieza sujeta nunca se desplaza más rápido (sin saltos)
   maxHeldAngular: 20,      // rad/s
   maxReleaseSpeed: 3,      // m/s: velocidad máxima al soltar
@@ -95,12 +99,12 @@ export const RULES = {
   flashMs: 900,
 };
 
+/** Consola del marcador (panel claro) + botonera vertical a su derecha, girada hacia el usuario. */
 export const HUD = {
-  position: [0, 1.66, -1.72],
-  tiltX: 0,
-  width: 1.15,
-  canvas: [1024, 820],
-  buttonY: 1.1,
+  position: [-0.17, 1.62, -1.72],
+  width: 1.08,
+  canvas: [1200, 720],
+  buttons: { x: 0.58, gap: 0.115, size: [0.29, 0.102], rotY: -0.32 },
 };
 
 export const RAY_LENGTH = 3;

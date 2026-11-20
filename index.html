@@ -40,7 +40,7 @@
           <span id="btn-enter-spinner" class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
           <span id="btn-enter-text">Cargando…</span>
         </button>
-        <button id="btn-reset" class="btn btn-lg btn-outline-light" type="button">Reiniciar laboratorio</button>
+        <button id="btn-reset" class="btn btn-lg btn-outline-light" type="button">Nueva ronda</button>
         <div class="form-check form-switch mb-0">
           <input class="form-check-input" type="checkbox" role="switch" id="sound-toggle" checked>
           <label class="form-check-label" for="sound-toggle">Sonido</label>
@@ -55,25 +55,25 @@
     <div class="row g-4">
       <section class="col-lg-7" aria-labelledby="t-preview">
         <h2 id="t-preview" class="h4">Vista previa de escritorio <span class="badge text-bg-warning align-middle">NO inmersiva</span></h2>
-        <p class="text-secondary small mb-2">Solo para inspeccionar la escena y probar la física: pulsa <em>Comenzar</em> en el panel 3D, arrastra una figura con el ratón (rueda = subir/bajar) y suéltala. Arrastrar en vacío orbita la cámara. <strong>Aquí no hay seguimiento de manos</strong>: la prueba real se hace en el visor.</p>
+        <p class="text-secondary small mb-2">Solo para inspeccionar la escena y probar la física: pulsa <em>Jugar</em> en la consola 3D, arrastra una figura con el ratón (rueda = subir/bajar) y suéltala. Arrastrar en vacío orbita la cámara. <strong>Aquí no hay seguimiento de manos</strong>: la prueba real se hace en el visor.</p>
         <div id="preview" class="preview rounded-3 shadow" aria-label="Vista previa 3D del laboratorio (no inmersiva)">
           <div id="loading" class="preview-loading"><div class="spinner-border text-info" role="status"><span class="visually-hidden">Cargando escena…</span></div></div>
           <div id="xr-overlay" class="preview-overlay d-none">Sesión VR activa — continúa dentro del visor.</div>
         </div>
 
-        <h2 class="h5 mt-4">Marcador (espejo accesible)</h2>
-        <div id="score-mirror" class="mirror p-3 rounded-3" aria-live="polite" aria-atomic="false"></div>
+        <h2 class="h5 mt-4">Consola del marcador (copia accesible)</h2>
+        <div id="score-mirror" class="mirror" aria-live="polite" aria-atomic="false"></div>
       </section>
 
       <section class="col-lg-5" aria-labelledby="t-instr">
         <h2 id="t-instr" class="h4">Cómo se juega en VR</h2>
         <ol class="list-group list-group-numbered mb-4">
           <li class="list-group-item">Deja los controles y muestra tus manos al visor.</li>
-          <li class="list-group-item">Apunta con el rayo al botón <strong>Comenzar</strong> del panel y haz la pinza (índice + pulgar). El cronómetro arranca aquí.</li>
+          <li class="list-group-item">Apunta con el rayo al botón <strong>Jugar</strong> de la botonera (a la derecha de la consola) y haz la pinza (índice + pulgar). El cronómetro arranca aquí; el mismo botón sirve para <strong>Pausa</strong> y <strong>Seguir</strong>.</li>
           <li class="list-group-item">Apunta a una figura de cualquier mesa (se ilumina) y pellízcala para tomarla.</li>
           <li class="list-group-item">Llévala sobre el bote de su categoría y abre la pinza: <strong>cae por gravedad</strong>.</li>
           <li class="list-group-item">Cuenta como acierto cuando queda <strong>quieta dentro</strong> del bote correcto (≈0.7 s). Un bote equivocado suma un error y la pieza vuelve a una mesa.</li>
-          <li class="list-group-item">Si una pieza cae al suelo, tómala de nuevo o usa <strong>Recuperar</strong>.</li>
+          <li class="list-group-item">Si una pieza cae al suelo, tómala de nuevo o usa <strong>Rescatar</strong>.</li>
         </ol>
 
         <h2 class="h5">Categorías (5 piezas de cada una)</h2>
